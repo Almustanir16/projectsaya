@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detail Bijuu</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+        }
+        img {
+            width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 id="bijuu-name"></h2>
+        <img id="bijuu-image" src="" alt="Bijuu">
+        <p id="bijuu-description"></p>
+        <a href="index.html">Kembali</a>
+    </div>
+
+    <script>
+        $(document).ready(function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const bijuuId = urlParams.get('id');
+
+            if (!bijuuId) {
+                $(".container").html("<p>ID Bijuu tidak ditemukan.</p>");
+                return;
+            }
+
+            $.get(`https://narutodb.xyz/api/tailed-beast/${bijuuId}`, function(response) {
+                $("#bijuu-name").text(response.name);
+                $("#bijuu-image").attr("src", response.images[0]);
+                $("#bijuu-description").text(response.description);
+            }).fail(function() {
+                $(".container").html("<p>Gagal mengambil data dari API.</p>");
+            });
+        });
+    </script>
+
+</body>
+</html>

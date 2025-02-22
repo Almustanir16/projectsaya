@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daftar Bijuu</title>
+  <!-- Bootstrap CSS untuk tampilan yang rapi -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <style>
+    .bijuu-card {
+      margin-bottom: 20px;
+    }
+    .bijuu-card img {
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+  <div class="container mt-5">
+    <h2 class="mb-4 text-center">Daftar Bijuu</h2>
+    <div id="bijuu-list" class="row"></div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $.get("https://narutodb.xyz/api/tailed-beast", function(response) {
+        if (!response || !response.tailedBeasts) {
+          $("#bijuu-list").html("<p>Data tidak tersedia.</p>");
+          return;
+        }
+        
+        const bijuuList = response.tailedBeasts;
+        let htmlContent = "";
+        
+        // Urutkan agar Kurama tampil pertama jika ada
+        bijuuList.sort(function(a, b) {
+          if (a.name.toLowerCase() === "kurama") return -1;
+          if (b.name.toLowerCase() === "kurama") return 1;
+          return 0;
+        });
+        
+        bijuuList.forEach(bijuu => {
+          let imageUrl = "";
+          // Gunakan URL dari API jika tersedia dan tidak kosong
+          if (bijuu.images && bijuu.images.length > 0 && bijuu.images[0].trim() !== "") {
+            imageUrl = bijuu.images[0];
+          } else {
+            // Jika tidak ada gambar, cek apakah bijuu adalah Kurama
+            if (bijuu.name.toLowerCase() === "kurama") {
+              // URL gambar khusus untuk Kurama (ganti dengan URL gambar lain jika perlu)
+              imageUrl = "https://upload.wikimedia.org/wikipedia/en/9/9f/Kurama.png";
+            } else {
+              // Fallback image untuk bijuu lain
+              imageUrl = "https://sanabilpublishing.com/wp-content/uploads/2022/09/abah-husni-691x1024.jpg";
+            }
+          }
+          
+          htmlContent += `
+            <div class="col-md-4 bijuu-card">
+              <div class="card">
+                <img src="${imageUrl}" class="card-img-top" alt="${bijuu.name}">
+                <div class="card-body text-center">
+                  <h5 class="card-title">${bijuu.name}</h5>
+                  <a href="detail.html?id=${bijuu.id}" class="btn btn-primary">Lihat Detail</a>
+                </div>
+              </div>
+            </div>
+          `;
+        });
+        
+        $("#bijuu-list").html(htmlContent);
+      }).fail(function() {
+        $("#bijuu-list").html("<p>Gagal mengambil data dari API.</p>");
+      });
+    });
+  </script>
+</body>
+</html>
